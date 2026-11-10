@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blackOctober>
-  <meta><siteTitle>Black October 2026</siteTitle><dateRange>17-22 October 2026</dateRange><lastUpdated>2026-11-10</lastUpdated></meta>
+  <meta><siteTitle>Black October 2026</siteTitle><dateRange>14-22 October 2026</dateRange><lastUpdated>2026-11-10</lastUpdated></meta>
   <events>
-    <event id="connectwise-cloud-backup" order="1">
+    <event id="connectwise-cloud-backup" order="2">
       <title>ConnectWise Cloud Backup supply-chain attack on Microsoft 365 tenants</title>
       <shortTitle>ConnectWise Cloud Backup breach</shortTitle>
       <startDate>2026-10-17</startDate>
@@ -14,7 +14,7 @@
       <cves></cves>
       <status>Cloud Backup and related services were suspended while credentials were disabled and services restored in phases. Investigation continued.</status>
       <summary>Attackers used a stolen ConnectWise Cloud Backup application credential to sign into customer Microsoft 365 tenants. ConnectWise shut down access on 17 October and revoked the application credentials. Microsoft later attributed the activity to Storm-0940. No backup data was reported stolen.</summary>
-      <happened><p>ConnectWise Cloud Backup was a multi-tenant service used by managed service providers to back up Microsoft 365 data. The service had broad permissions in customer tenants, including access to mailboxes, files, Teams messages and directory data.</p><p>Attackers used the application identity rather than a user password. In at least one tenant, a related application added itself as Global Administrator and created new client secrets, which could have allowed access to persist after the original credential was revoked.</p></happened>
+      <happened><p>ConnectWise Cloud Backup was a multi-tenant service used by managed service providers to back up Microsoft 365 data. The service had broad permissions in customer tenants, including access to mailboxes, files, Teams messages and directory data.</p><p>Attackers used the application identity rather than a user password. In at least one MSP tenant, a related ConnectWise Teams/Cloud Management app added itself as a Global Administrator and injected new client secrets into other trusted applications, which could have allowed access to persist after the original credential was revoked. Microsoft and ConnectWise did not identify a software vulnerability; the credential itself was the way in.</p></happened>
       <how><p>The attackers obtained the app credential, authenticated as the trusted service principal and requested Microsoft Graph access tokens. Because many tenants had already approved the app, the tokens carried the app permissions. The attackers could then read data or make changes without users' passwords.</p><p>A service principal is an application identity in Microsoft Entra ID. Its client secret acts like a password; an access token is the permission proof issued after authentication.</p></how>
       <impact><p>The incident affected MSPs and Microsoft 365 tenants at scale. Public reporting described unauthorized sign-ins in at least 173 tenants and more than 2,250 targeted tenant IDs. Cloud Backup, SaaS Security and Cloud Management services were interrupted. ConnectWise said there was no evidence that encrypted backup archives were accessed, but tenant data and persistent application changes required review.</p></impact>
       <fix><p>ConnectWise disabled the affected application IDs, revoked certificates and kept services suspended while security reviews were completed. Partners were told to review audit logs, remove unexpected credentials and follow formal reconnection instructions. Existing backup archives were reported as encrypted and safe.</p></fix>
@@ -35,7 +35,7 @@
       </sources>
       <verification><note>The exact way the application credential was stolen was not publicly disclosed. Public figures differ because sources counted different kinds of tenant activity. ConnectWise reported no evidence of backup archive access; investigation and tenant review were still ongoing.</note></verification>
     </event>
-    <event id="emudhra-weak-keys" order="2">
+    <event id="emudhra-weak-keys" order="3">
       <title>eMudhra weak private keys in certificate authority certificates</title>
       <shortTitle>eMudhra CA weak keys</shortTitle>
       <startDate>2026-10-17</startDate>
@@ -48,7 +48,7 @@
       <status>All eight intermediates were revoked and major browsers blocked them. eMudhra later exited the SSL/TLS certificate business.</status>
       <summary>Eight eMudhra intermediate CA keys were generated with extremely small private values. Anyone could brute-force the values from the public certificates, which could have enabled forged TLS or code-signing certificates. Vendors rapidly revoked trust, and no confirmed malicious use was reported.</summary>
       <happened><p>A key-generation ceremony in April 2025 accidentally created a second, ultra-weak key pair. Each P-384 private key had a value under 256; one example had the value 4. That is far too little randomness for a cryptographic private key.</p><p>With a weak intermediate CA key, an attacker could sign a certificate for a website or software package that browsers would normally trust. The issue was a manufacturing error, not an external breach of eMudhra systems.</p></happened>
-      <how><p>The failure was low entropy: the private key had only about eight bits of possible value. A person with the public certificate could try the few hundred possible values until one matched. The private key could then be used to sign a fake certificate.</p><p>Browser and operating-system vendors used revocation lists and trust-store updates. This removed trust in certificates signed by the affected keys.</p></how>
+      <how><p>The failure was low entropy: the private key had only about eight bits of possible value. A person with the public certificate could try the few hundred possible values until one matched. The private key could then be used to sign a fake certificate.</p><p>Browser and operating-system vendors used revocation lists and trust-store updates. This removed trust in certificates signed by the affected keys. A forged certificate would let an attacker intercept HTTPS traffic to a site (a man-in-the-middle attack) or sign malicious software.</p></how>
       <impact><p>No actual breach of eMudhra systems or theft of user data was reported. The main impact was loss of trust in the affected CA hierarchy and the need to replace certificates. One U.S. customer ecosystem was reported to have about 30,800 certificates under the impacted hierarchy.</p></impact>
       <fix><p>eMudhra revoked all eight intermediates. Chrome used CRLSet, Firefox used OneCRL, and Microsoft, Apple and Android updated trust decisions. Developers and administrators were told to update CA bundles and software that carries its own trust store.</p></fix>
       <timeline>
@@ -71,7 +71,7 @@
       </sources>
       <verification><note>The sources disagree on whether about 30,800 certificates had been issued under the affected hierarchy. The site preserves both the eMudhra statement and the independent report. No confirmed malicious use was found in the supplied research.</note></verification>
     </event>
-    <event id="php2shell" order="3">
+    <event id="php2shell" order="4">
       <title>PHP2Shell: critical PHP remote code execution flaws</title>
       <shortTitle>PHP2Shell RCE flaws</shortTitle>
       <startDate>2026-10-17</startDate>
@@ -81,12 +81,12 @@
       <affected>Web servers running affected PHP versions, including Apache mod_php, PHP-FPM, php-cgi and embedded PHP devices. More than 5.1 million Internet-facing hosts were estimated at risk.</affected>
       <attacker confidence="unattributed">Unattributed</attacker>
       <cves><cve>CVE-2026-109618</cve><cve>CVE-2026-109619</cve></cves>
-      <status>PHP released fixes on 2026-10-21. CISA added the CVEs to its Known Exploited Vulnerabilities catalog; investigations continued.</status>
+      <status>PHP released fixes on 2026-10-21. CISA added the CVEs to its Known Exploited Vulnerabilities catalog; investigations continued. CISA's KEV patch deadline was 2026-10-29.</status>
       <summary>Two critical PHP bugs allowed unauthenticated attackers to execute commands on vulnerable web servers. Attack probes were observed on 17 October, before the public fixes on 21 October, so administrators had to patch, audit and check for web shells.</summary>
       <happened><p>CVE-2026-109618 involves an out-of-memory cleanup path that can follow corrupted internal data. CVE-2026-109619 is a use-after-free flaw where stale request state can be reused. Both can lead to remote code execution as the web-server account.</p><p>The flaws were in PHP core, not in a particular website. Attackers sent carefully crafted web requests; they did not need a login or SQL injection.</p></happened>
-      <how><p>For the out-of-memory bug, an attacker sends data that makes PHP exceed its memory limit at a specific point, confusing cleanup. For the use-after-free bug, the attacker creates and reuses stale session or error state. In both cases, arbitrary commands can run over the network.</p><p>Remote code execution means the attacker can run commands as the web process. A honeypot is a decoy system used to observe attacks.</p></how>
+      <how><p>For the out-of-memory bug, an attacker sends data that makes PHP exceed its memory limit at a specific point, confusing cleanup. For the use-after-free bug, one request leaves stale session or error state behind and a later request on the same PHP worker process reuses it. In both cases, arbitrary commands can run over the network.</p><p>Remote code execution means the attacker can run commands as the web process. A honeypot is a decoy system used to observe attacks.</p></how>
       <impact><p>More than 5.1 million Internet-facing hosts were estimated to have vulnerable PHP. Reported consequences included web shells, stolen data and chained compromises of network appliances. The public research also recorded more than 77,000 exploit attempts against WordPress sites without confirmed infections in one dataset.</p></impact>
-      <fix><p>Update to PHP 8.5.12, 8.4.27, 8.3.36 or 8.2.35, or use a vendor-patched package. If patching is delayed, apply the documented temporary configuration mitigations, restart workers and audit logs and files for shells or unusual child processes.</p></fix>
+      <fix><p>Update to PHP 8.5.12, 8.4.27, 8.3.36 or 8.2.35, or use a vendor-patched package. If patching is delayed, apply the documented temporary configuration mitigations, restart workers and audit logs and files for shells or unusual child processes. PHP 8.1 and earlier are unsupported and have no official patch.</p></fix>
       <timeline>
         <entry date="2026-08" refs="S5"><text>Security teams reportedly identified the two PHP RCE bugs during preliminary research.</text></entry>
         <entry date="2026-10-17" refs="S5"><text>AWS telemetry observed the first exploit probes.</text></entry>
@@ -107,7 +107,7 @@
       </sources>
       <verification><note>Severity ratings differ across sources. PHP and CISA cite approximately 9.2, while Red Hat rated one CVE 8.1. A suspected China-nexus actor was mentioned by one report but was not confirmed, so attribution remains unattributed.</note></verification>
     </event>
-    <event id="updraftcentral" order="4">
+    <event id="updraftcentral" order="5">
       <title>TeamUpdraft / UpdraftCentral WordPress backdoor via stolen keys</title>
       <shortTitle>UpdraftCentral key breach</shortTitle>
       <startDate>2026-10-17</startDate>
@@ -121,8 +121,8 @@
       <summary>Attackers accessed TeamUpdraft’s customer database, stole UpdraftCentral connection keys and used them to send trusted commands to connected WordPress sites. Malicious plugins created hidden administrator accounts and backdoors.</summary>
       <happened><p>UpdraftCentral lets one dashboard control backups and updates across many WordPress sites. A private connection key stored by the service authenticates remote commands.</p><p>After stealing those keys, attackers uploaded and activated malicious plugins. The plugins hid themselves and created administrator accounts, so disabling the service alone did not remove every implant.</p></happened>
       <how><p>The stolen private keys let attackers issue commands that looked authorized. One command uploaded a plugin archive. The plugin created a hidden admin user and could bypass normal login checks, giving attackers persistence even after key revocation.</p><p>A connection key is a secret digital code used to authenticate a remote command. A backdoor is hidden software that provides secret access.</p></how>
-      <impact><p>The customer database contained names, addresses, order history, hashed passwords, two-factor settings and connection keys. WordPress sites could be fully taken over. Reports observed more than 99 distinct malicious plugin names, while the exact number of compromised sites remained unknown.</p></impact>
-      <fix><p>Update UpdraftPlus to the released versions, remove old UpdraftCentral keys, rotate passwords and two-factor settings, and inspect plugins, files, administrator accounts and logs. Wordfence also released an emergency firewall rule. Updating alone did not remove already-installed backdoors.</p></fix>
+      <impact><p>The customer database contained names, addresses, order history, hashed passwords, two-factor settings and connection keys. WordPress sites could be fully taken over. Reports observed more than 99 distinct malicious plugin names, while the exact number of compromised sites remained unknown. TeamUpdraft did not store payment card data, and backups stored by users in Google Drive, Dropbox or similar services were not directly compromised.</p></impact>
+      <fix><p>Update UpdraftPlus to 1.26.13 or later (1.26.12/2.26.12 was the first revocation release; 1.26.13 corrected the revocation), remove old UpdraftCentral keys, rotate passwords and two-factor settings, and inspect plugins, files, administrator accounts and logs. Wordfence also released an emergency firewall rule. Updating alone did not remove already-installed backdoors.</p></fix>
       <timeline>
         <entry date="2026-10-17/18" refs="S1,S2"><text>TeamUpdraft detected unauthorized access and attackers likely extracted customer data and connection keys.</text></entry>
         <entry date="2026-10-18" refs="S3"><text>The first malicious plugin installation was observed.</text></entry>
@@ -141,7 +141,7 @@
       </sources>
       <verification><note>The count of affected sites was not officially confirmed. Research sources use different version numbers for free and premium updates; the site preserves the supplied distinction. Attribution was not confirmed.</note></verification>
     </event>
-    <event id="artex-ai-agents" order="5">
+    <event id="artex-ai-agents" order="6">
       <title>ARTEX: AI-agent driven intrusion campaign</title>
       <shortTitle>ARTEX AI intrusion</shortTitle>
       <startDate>2026-10-17</startDate>
@@ -152,8 +152,8 @@
       <attacker confidence="confirmed">VAPOR PANDA, according to CrowdStrike</attacker>
       <cves></cves>
       <status>The campaign appeared complete and ARTEX was taken offline by its developer. Security firms published detection rules and mitigation guidance.</status>
-      <summary>Starting on 17 October, VAPOR PANDA used the ARTEX AI toolkit to scan and breach hundreds of networks at machine speed. The campaign targeted more than 200 organizations in 11 days and installed the BLOODALCHEMY backdoor in at least 9.</summary>
-      <happened><p>ARTEX is an agentic penetration-testing framework powered by large language models. A human operator provided target scopes, then planner and worker agents scanned networks, selected exploits and carried out post-exploitation steps.</p><p>The agents installed BLOODALCHEMY, harvested administrator passwords and BitLocker keys, and used old email or VPN keys to move laterally. A human remained in the loop and issued instructions at critical points.</p></happened>
+      <summary>Starting on 17 October, VAPOR PANDA used the ARTEX AI toolkit to scan hundreds of networks and breach at least nine of them at machine speed. The campaign targeted more than 200 organizations in 11 days and installed the BLOODALCHEMY backdoor in the confirmed intrusions.</summary>
+      <happened><p>ARTEX is an agentic penetration-testing framework powered by large language models. A human operator provided target scopes, then planner and worker agents scanned networks, selected exploits and carried out post-exploitation steps.</p><p>The agents installed BLOODALCHEMY, harvested administrator passwords and BitLocker keys, used a four-year-old email-server key to forge an administrator token and read mailboxes, and found VPN configuration files in an old email to move laterally. A human remained in the loop and issued instructions at critical points.</p></happened>
       <how><p>ARTEX scanned target ranges, used an LLM to interpret findings, selected or generated exploits and installed a backdoor after access. It also searched for credentials in directory attributes and old files, then used those secrets for lateral movement. Human instructions could redirect agents away from protected systems.</p><p>The attack was not a new vulnerability. It combined automation with existing weaknesses, poor credential hygiene and exposed services.</p></how>
       <impact><p>More than 200 organizations in at least 14 countries were targeted, including sensitive government and corporate systems. At least 9 organizations had confirmed intrusions. The campaign exposed administrator passwords, disk-encryption keys, email and network configuration data, raising the speed and scale of cyber-espionage.</p></impact>
       <fix><p>Rotate signing keys, tokens, service credentials and old passwords. Enforce SAML validation and AWS IMDSv2, patch internet-facing systems, deploy endpoint detection on all servers, monitor high-volume scripted activity and apply the published ARTEX/BLOODALCHEMY detection rules.</p></fix>
@@ -177,21 +177,21 @@
       </sources>
       <verification><note>Attribution beyond VAPOR PANDA comes from CrowdStrike intelligence and was not independently confirmed by every source. The supplied research gives no CVE or conventional numeric severity score.</note></verification>
     </event>
-    <event id="litellm" order="6">
+    <event id="litellm" order="7">
       <title>LiteLLM supply-chain attack</title>
       <shortTitle>LiteLLM supply-chain hack</shortTitle>
       <startDate>2026-10-21</startDate>
       <category>Supply-chain attack</category>
       <severity>Critical</severity>
       <cvss>Not available in the research file.</cvss>
-      <affected>Any environment that installed LiteLLM v1.107.0 while the malicious release was available: developer laptops, CI pipelines and cloud AI gateways. LiteLLM had about 23 million weekly downloads.</affected>
+      <affected>Any environment that installed LiteLLM v1.107.0 while the malicious release was available: developer laptops, CI pipelines and cloud AI gateways. LiteLLM had about 23 million weekly downloads. Enterprise/private LiteLLM releases were not affected.</affected>
       <attacker confidence="unattributed">Unknown; stolen GitHub CLI tokens were used</attacker>
       <cves></cves>
       <status>The malicious package and images were removed. Users were told to downgrade to v1.106.2 or earlier, delete startup-hook files, rotate secrets and rebuild affected environments.</status>
       <summary>Attackers hijacked LiteLLM’s release pipeline and published a backdoored v1.107.0 to PyPI and Docker. Hidden Python startup files collected cloud credentials, developer keys, browser passwords and other secrets whenever Python ran.</summary>
       <happened><p>Attackers used stolen GitHub tokens from LiteLLM developers to redirect a release workflow to a lookalike fork. A one-line build change caused cook.pth, cook.py and sitecustomize.py to ship in the package.</p><p>Python automatically loads some .pth and sitecustomize files at interpreter startup. The payload used that behavior to steal AWS, Azure, GCP, Kubernetes, Docker, SSH/GPG, browser and AI-provider secrets.</p></happened>
       <how><p>Stolen developer tokens allowed the attackers to run the release process. The malicious fork added files that execute automatically when Python starts, even if the user did not explicitly import LiteLLM. The code gathered secrets and sent them to attacker infrastructure.</p><p>This was a supply-chain attack because the build and distribution path was compromised, not because LiteLLM users installed a normal software bug.</p></how>
-      <impact><p>The package had about 49,000 downloads before removal, within a project with about 23 million weekly downloads. Any affected environment could have exposed cloud accounts, developer resources, AI service credentials or enterprise data. No specific downstream breach was confirmed in the supplied research.</p></impact>
+      <impact><p>The package had about 49,000 downloads before removal, within a project with about 23 million weekly downloads. The malicious wheels were available for only about two hours, from roughly 11:40 to 13:23 UTC. Any affected environment could have exposed cloud accounts, developer resources, AI service credentials or enterprise data. No specific downstream breach was confirmed in the supplied research.</p></impact>
       <fix><p>Remove v1.107.0, pin to v1.106.2 or earlier, delete cook.pth, cook.py and sitecustomize.py, rotate all potentially exposed credentials, audit logs and rebuild affected environments from a clean state.</p></fix>
       <timeline>
         <entry date="2026-10-21 11:39 UTC" refs="S1,S2"><text>Compromised LiteLLM v1.107.0 was published to PyPI.</text></entry>
@@ -211,30 +211,30 @@
       </sources>
       <verification><note>The supplied research notes small differences in the exact quarantine time and explains that some figures are downloads rather than unique installations. No official government advisory specific to LiteLLM was found.</note></verification>
     </event>
-    <event id="drupal-rce" order="7">
-      <title>Drupal critical remote code execution patches</title>
-      <shortTitle>Drupal core RCE patches</shortTitle>
-      <startDate>2026-10-22</startDate>
+    <event id="drupal-rce" order="1">
+      <title>Drupal Field UI &amp; Entity List remote code execution patches</title>
+      <shortTitle>Drupal Field UI &amp; Entity List RCE</shortTitle>
+      <startDate>2026-10-14</startDate>
       <category>Zero-day vulnerability</category>
       <severity>Critical</severity>
-      <cvss>Not available in the research file.</cvss>
-      <affected>Drupal sites using affected Field UI and Entity Reference modules. The supplied research describes internet-facing Drupal installations as exposed before patching.</affected>
+      <cvss>Critical — CVSS 9.8 (Drupal risk score 19/25)</cvss>
+      <affected>Drupal sites running vulnerable versions. About 151,000 Drupal sites (28.5% of reporting sites) were estimated to run vulnerable versions before the fix. CVE-2026-108097 affects Drupal core Field UI; CVE-2026-108099 affects the Entity List contributed module.</affected>
       <attacker confidence="unattributed">Unattributed</attacker>
       <cves><cve>CVE-2026-108097</cve><cve>CVE-2026-108099</cve></cves>
-      <status>Drupal released security advisories and patches. Administrators were told to update core and contributed modules and review logs for exploitation.</status>
-      <summary>Drupal issued urgent patches for two critical remote code execution vulnerabilities affecting Field UI and Entity Reference functionality. The flaws could let unauthenticated attackers send crafted requests that execute code on a site server.</summary>
-      <happened><p>The Field UI flaw and Entity Reference flaw affected Drupal components that process structured web requests. A crafted request could reach unsafe code paths and give an attacker control of the web process.</p><p>Because Drupal sites often expose administrative and content endpoints to the internet, patching and reviewing logs were important even when no compromise was visible.</p></happened>
-      <how><p>An attacker sends a request that reaches a vulnerable Drupal code path. If the server accepts the request, the resulting remote code execution runs with the web process permissions. The supplied research describes this at a high level and does not claim a single confirmed exploit chain.</p></how>
-      <impact><p>A successful exploit could change site content, read server-side data, install a backdoor or pivot to other systems. Exact victim counts were not confirmed in the supplied research, which is why the site presents the exposure and remediation guidance without invented totals.</p></impact>
-      <fix><p>Apply the Drupal security releases immediately, update affected contributed modules, restrict unnecessary exposure, review access and error logs, and investigate unexpected files or administrator activity.</p></fix>
+      <status>Drupal released security advisories and patches on 2026-10-14. Administrators were told to update core and the Entity List module and review logs. No confirmed exploitation in the wild was reported as of 2026-11-10.</status>
+      <summary>Drupal issued urgent patches for two critical remote code execution vulnerabilities: one in core Field UI and one in the contributed Entity List module. Core alone did not expose the Field UI flaw; a specific module combination had to be present. At least one attack path required no login. No confirmed exploitation in the wild was reported as of 10 November 2026.</summary>
+      <happened><p>CVE-2026-108097 is in Drupal core's Field UI code, but on its own core did not expose it. It was only reachable when certain contributed modules passed requests into that code. CVE-2026-108099 is in the Entity List contributed module. In at least one attack path no login was required, so any visitor could trigger it.</p><p>Drupal published advisories SA-CORE-2026-014 and SA-CONTRIB-2026-218 on 14 October 2026, with patches the same day. Until sites updated, the advisory suggested uninstalling the core field_ui module as a temporary workaround.</p></happened>
+      <how><p>A contributed module accepts a crafted request and passes the input into Drupal's Field UI or Entity List code path. A logic bug there causes Drupal to execute part of that input as code, so the attacker's code runs with the web server account's permissions.</p><p>The research describes this chain but reports no confirmed exploitation in the wild. The risk is highest where multiple contributed modules are installed and content endpoints are exposed to unauthenticated visitors.</p></how>
+      <impact><p>A successful exploit could change site content, read server-side data, install a backdoor or pivot to other systems. About 151,000 sites were estimated to be running vulnerable versions before patching, from one research estimate. No confirmed exploitation in the wild was reported as of 10 November 2026, so the main impact was urgent exposure and patch work.</p></impact>
+      <fix><p>Update Drupal core to 10.6.19, 11.3.19 or 11.4.10 and the Entity List module to 3.0.10. If updating is delayed, uninstall the core field_ui module. Drupal Steward virtual patching may block some attacks but is not guaranteed to cover every exploit path. Review access and error logs and investigate unexpected files or administrator activity afterwards.</p></fix>
       <timeline>
-        <entry date="2026-10-14" refs="S1,S2"><text>Drupal published a critical security release for the affected components.</text></entry>
-        <entry date="2026-10-17" refs="S3,S4"><text>Researchers and vendors reported active exploitation risk and urged immediate updates.</text></entry>
-        <entry date="2026-10-22" refs="S3,S5"><text>Security reporting summarized the patches and exploitation concern.</text></entry>
-        <entry date="2026-10-27" refs="S1,S4"><text>Administrators continued reviewing logs and applying vendor updates.</text></entry>
+        <entry date="2026-10-12" refs="S1,S2"><text>Drupal issued a public service announcement scheduling a critical security release for 14 October.</text></entry>
+        <entry date="2026-10-14" refs="S1,S2"><text>Drupal published SA-CORE-2026-014 and SA-CONTRIB-2026-218 with patches for the Field UI and Entity List flaws.</text></entry>
+        <entry date="2026-10-19" refs="S3,S4,S5"><text>SecurityWeek, GBHackers and other outlets summarised the advisories, warned of fast exploitation risk and urged immediate updates.</text></entry>
+        <entry date="2026-11-10" refs="S1,S3"><text>No confirmed exploitation in the wild had been reported; administrators were expected to have applied the updates.</text></entry>
       </timeline>
       <lessons><lesson>A security release is only protective after it is installed.</lesson><lesson>CMS inventories must include contributed modules, not only core.</lesson><lesson>Review logs after a critical web vulnerability is disclosed.</lesson><lesson>Least privilege limits what a compromised web process can do.</lesson></lessons>
-      <glossary><term name="Remote Code Execution (RCE)">A flaw that allows an attacker to run code on a server.</term><term name="Drupal core">The main software that powers a Drupal site.</term><term name="Field UI">Drupal functionality for managing fields through an interface.</term><term name="Entity Reference">Drupal functionality for linking content entities.</term><term name="Security advisory">A vendor notice describing a vulnerability and its fix.</term><term name="Patch">A software update that fixes a bug.</term></glossary>
+      <glossary><term name="Remote Code Execution (RCE)">A flaw that allows an attacker to run code on a server.</term><term name="Drupal core">The main software that powers a Drupal site.</term><term name="Field UI">Drupal functionality for managing fields through an interface.</term><term name="Entity List">A contributed Drupal module for building lists of content entities.</term><term name="Security advisory">A vendor notice describing a vulnerability and its fix.</term><term name="Patch">A software update that fixes a bug.</term></glossary>
       <sources>
         <source id="S1" type="Official/Primary"><title>Drupal core - Critical security release</title><publisher>Drupal.org</publisher><url>https://www.drupal.org/sa-core-2026-014</url><published>2026-10-14</published><note>Official Drupal core advisory and patch.</note></source>
         <source id="S2" type="Official/Primary"><title>Drupal contributed modules security release</title><publisher>Drupal.org</publisher><url>https://www.drupal.org/sa-contrib-2026-218</url><published>2026-10-14</published><note>Official contributed-module advisory.</note></source>
@@ -242,7 +242,7 @@
         <source id="S4" type="News"><title>Drupal warns of fast exploitation risk for critical core RCE flaw</title><publisher>GBHackers</publisher><url>https://gbhackers.com/drupal-warns-critical-rce-flaw/</url><published>2026-10-22</published><note>Patch and exploitation reporting.</note></source>
         <source id="S5" type="News"><title>Drupal critical security release October 14</title><publisher>The DropTimes</publisher><url>https://www.thedroptimes.com/72811/drupal-critical-security-release-october-14</url><published>2026-10-22</published><note>Release summary.</note></source>
       </sources>
-      <verification><note>The supplied research contains limited quantitative detail and does not confirm a specific attacker or victim count. The page intentionally states what was not confirmed rather than filling gaps with estimates.</note></verification>
+      <verification><note>The supplied research confirms the affected versions and patch releases but does not confirm in-the-wild exploitation. The site distinguishes the core Field UI flaw from the contributed Entity List flaw and does not invent victim counts; the 151,000-site figure is one research estimate.</note></verification>
     </event>
   </events>
 </blackOctober>

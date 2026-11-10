@@ -1,10 +1,211 @@
 // ai.js contains two small, explainable browser-only NLP features.
-const STOPWORDS = 'the and for are but not you all can had her was one our out has have that this with from they will would there their what about which when your said each she how its than them these some into then more other were been also over only such after most because while where those being both between during before through under could should may might must does did just very much many any'.split(' ');
+const STOPWORDS =
+  'the and for are but not you all can had her was one our out has have that this with from they will would there their what about which when your said each she how its than them these some into then more other were been also over only such after most because while where those being both between during before through under could should may might must does did just very much many any'.split(
+    ' ',
+  );
 const TAG_THRESHOLD = 6;
-const TAG_DICTIONARY = { 'Supply chain': { supply:3, chain:3, vendor:2, 'third-party':2, thirdparty:2, update:1, dependency:2, package:2, repository:1, trusted:2, downstream:2, customer:1, integration:1, token:1, permission:1 }, 'Exploited vulnerability': { vulnerability:2, exploit:3, exploited:3, flaw:2, patch:2, patched:2, unpatched:2, cve:1, remote:1, execution:2, rce:3, 'zero-day':3, zeroday:3, advisory:1 }, 'Cryptography and certificates': { key:1, keys:1, certificate:3, certificates:3, cryptographic:3, encryption:2, private:1, signing:2, authority:2, trust:1, tls:2, weak:1 }, 'AI and automation': { ai:3, agent:3, agents:3, autonomous:3, model:2, llm:3, automated:2, machine:1, prompt:2, automation:2 }, 'Web and CMS': { website:2, websites:2, wordpress:3, drupal:3, php:3, plugin:2, cms:3, web:1, server:1, backdoor:2 }, 'Cloud and identity': { cloud:3, microsoft:2, tenant:3, tenants:3, account:1, accounts:1, credential:2, login:1, authentication:2, access:1, backup:2 } };
-function tokenize(text) { return text.toLowerCase().replace(/[^a-z0-9-]/g,' ').split(/\s+/).filter(word => word.length >= 3 && !/^\d+$/.test(word) && word !== 'cve' && !STOPWORDS.includes(word)).map(word => word.length > 4 && word.endsWith('s') ? word.slice(0,-1) : word); }
-function buildDocumentText(event) { return [event.title,event.shortTitle,event.summary,...event.whatHappened,...event.howItWorked,...event.lessons].join(' '); }
-function suggestTags(event) { const tokens = tokenize(buildDocumentText(event)); const counts = {}; tokens.forEach(token => { counts[token] = (counts[token] || 0) + 1; }); const results = Object.entries(TAG_DICTIONARY).map(([tag, words]) => { let score = 0; const matched = []; Object.entries(words).forEach(([word, weight]) => { const count = counts[word] || 0; if (count) { score += weight * count; matched.push({word,count}); } }); return {tag,score,matched}; }).filter(item => item.score >= TAG_THRESHOLD).sort((a,b) => b.score - a.score); if (!results.length) { return Object.entries(TAG_DICTIONARY).map(([tag, words]) => ({tag,score:Object.keys(words).reduce((sum,word) => sum + (counts[word] || 0),0),matched:Object.keys(words).filter(word => counts[word]).map(word => ({word,count:counts[word]}))})).sort((a,b)=>b.score-a.score).slice(0,1); } return results.slice(0,3); }
-function buildTfIdfModel(events) { const documents = events.map(event => tokenize(buildDocumentText(event))); const vocabulary = new Set(documents.flat()); const df = {}; vocabulary.forEach(word => { df[word] = documents.filter(tokens => tokens.includes(word)).length; }); const idf = {}; vocabulary.forEach(word => { idf[word] = Math.log((events.length + 1) / (df[word] + 1)) + 1; }); const vectors = documents.map(tokens => { const counts = {}; tokens.forEach(word => { counts[word] = (counts[word] || 0) + 1; }); const vector = {}; Object.keys(counts).forEach(word => { vector[word] = (counts[word] / tokens.length) * idf[word]; }); return vector; }); return {idf,vectors}; }
-function cosineSimilarity(a,b) { const words = new Set([...Object.keys(a),...Object.keys(b)]); let dot = 0, lengthA = 0, lengthB = 0; words.forEach(word => { dot += (a[word] || 0) * (b[word] || 0); lengthA += (a[word] || 0) ** 2; lengthB += (b[word] || 0) ** 2; }); if (!lengthA || !lengthB) return 0; return dot / (Math.sqrt(lengthA) * Math.sqrt(lengthB)); }
-function findRelated(eventId, events, model, count = 3) { const index = events.findIndex(event => event.id === eventId); if (index < 0) return []; return events.map((event,i) => { if (i === index) return null; const sharedWords = Object.keys(model.vectors[index]).map(word => ({word,score:(model.vectors[index][word] || 0) * (model.vectors[i][word] || 0)})).filter(item => item.score > 0).sort((a,b)=>b.score-a.score).slice(0,3).map(item=>item.word); return {event, similarity:cosineSimilarity(model.vectors[index],model.vectors[i]), sharedWords}; }).filter(Boolean).filter(item => item.similarity >= 0.05).sort((a,b)=>b.similarity-a.similarity).slice(0,count); }
+const TAG_DICTIONARY = {
+  'Supply chain': {
+    supply: 3,
+    chain: 3,
+    vendor: 2,
+    'third-party': 2,
+    thirdparty: 2,
+    update: 1,
+    dependency: 2,
+    package: 2,
+    repository: 1,
+    trusted: 2,
+    downstream: 2,
+    customer: 1,
+    integration: 1,
+    token: 1,
+    permission: 1,
+  },
+  'Exploited vulnerability': {
+    vulnerability: 2,
+    exploit: 3,
+    exploited: 3,
+    flaw: 2,
+    patch: 2,
+    patched: 2,
+    unpatched: 2,
+    cve: 1,
+    remote: 1,
+    execution: 2,
+    rce: 3,
+    'zero-day': 3,
+    zeroday: 3,
+    advisory: 1,
+  },
+  'Cryptography and certificates': {
+    key: 1,
+    keys: 1,
+    certificate: 3,
+    certificates: 3,
+    cryptographic: 3,
+    encryption: 2,
+    private: 1,
+    signing: 2,
+    authority: 2,
+    trust: 1,
+    tls: 2,
+    weak: 1,
+  },
+  'AI and automation': {
+    ai: 3,
+    agent: 3,
+    agents: 3,
+    autonomous: 3,
+    model: 2,
+    llm: 3,
+    automated: 2,
+    machine: 1,
+    prompt: 2,
+    automation: 2,
+  },
+  'Web and CMS': {
+    website: 2,
+    websites: 2,
+    wordpress: 3,
+    drupal: 3,
+    php: 3,
+    plugin: 2,
+    cms: 3,
+    web: 1,
+    server: 1,
+    backdoor: 2,
+  },
+  'Cloud and identity': {
+    cloud: 3,
+    microsoft: 2,
+    tenant: 3,
+    tenants: 3,
+    account: 1,
+    accounts: 1,
+    credential: 2,
+    login: 1,
+    authentication: 2,
+    access: 1,
+    backup: 2,
+  },
+};
+function tokenize(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, ' ')
+    .split(/\s+/)
+    .filter(
+      (word) =>
+        word.length >= 3 && !/^\d+$/.test(word) && word !== 'cve' && !STOPWORDS.includes(word),
+    )
+    .map((word) => (word.length > 4 && word.endsWith('s') ? word.slice(0, -1) : word));
+}
+function buildDocumentText(event) {
+  return [
+    event.title,
+    event.shortTitle,
+    event.summary,
+    ...event.whatHappened,
+    ...event.howItWorked,
+    ...event.lessons,
+  ].join(' ');
+}
+function suggestTags(event) {
+  const tokens = tokenize(buildDocumentText(event));
+  const counts = {};
+  tokens.forEach((token) => {
+    counts[token] = (counts[token] || 0) + 1;
+  });
+  const results = Object.entries(TAG_DICTIONARY)
+    .map(([tag, words]) => {
+      let score = 0;
+      const matched = [];
+      Object.entries(words).forEach(([word, weight]) => {
+        const count = counts[word] || 0;
+        if (count) {
+          score += weight * count;
+          matched.push({ word, count });
+        }
+      });
+      return { tag, score, matched };
+    })
+    .filter((item) => item.score >= TAG_THRESHOLD)
+    .sort((a, b) => b.score - a.score);
+  if (!results.length) {
+    return Object.entries(TAG_DICTIONARY)
+      .map(([tag, words]) => ({
+        tag,
+        score: Object.keys(words).reduce((sum, word) => sum + (counts[word] || 0), 0),
+        matched: Object.keys(words)
+          .filter((word) => counts[word])
+          .map((word) => ({ word, count: counts[word] })),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 1);
+  }
+  return results.slice(0, 3);
+}
+function buildTfIdfModel(events) {
+  const documents = events.map((event) => tokenize(buildDocumentText(event)));
+  const vocabulary = new Set(documents.flat());
+  const df = {};
+  vocabulary.forEach((word) => {
+    df[word] = documents.filter((tokens) => tokens.includes(word)).length;
+  });
+  const idf = {};
+  vocabulary.forEach((word) => {
+    idf[word] = Math.log((events.length + 1) / (df[word] + 1)) + 1;
+  });
+  const vectors = documents.map((tokens) => {
+    const counts = {};
+    tokens.forEach((word) => {
+      counts[word] = (counts[word] || 0) + 1;
+    });
+    const vector = {};
+    Object.keys(counts).forEach((word) => {
+      vector[word] = (counts[word] / tokens.length) * idf[word];
+    });
+    return vector;
+  });
+  return { idf, vectors };
+}
+function cosineSimilarity(a, b) {
+  const words = new Set([...Object.keys(a), ...Object.keys(b)]);
+  let dot = 0,
+    lengthA = 0,
+    lengthB = 0;
+  words.forEach((word) => {
+    dot += (a[word] || 0) * (b[word] || 0);
+    lengthA += (a[word] || 0) ** 2;
+    lengthB += (b[word] || 0) ** 2;
+  });
+  if (!lengthA || !lengthB) return 0;
+  return dot / (Math.sqrt(lengthA) * Math.sqrt(lengthB));
+}
+function findRelated(eventId, events, model, count = 3) {
+  const index = events.findIndex((event) => event.id === eventId);
+  if (index < 0) return [];
+  return events
+    .map((event, i) => {
+      if (i === index) return null;
+      const sharedWords = Object.keys(model.vectors[index])
+        .map((word) => ({
+          word,
+          score: (model.vectors[index][word] || 0) * (model.vectors[i][word] || 0),
+        }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map((item) => item.word);
+      return {
+        event,
+        similarity: cosineSimilarity(model.vectors[index], model.vectors[i]),
+        sharedWords,
+      };
+    })
+    .filter(Boolean)
+    .filter((item) => item.similarity >= 0.05)
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, count);
+}
