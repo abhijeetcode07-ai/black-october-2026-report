@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blackOctober>
+  <meta><siteTitle>Black October 2026</siteTitle><dateRange>17-22 October 2026</dateRange><lastUpdated>2026-11-10</lastUpdated></meta>
+  <events>
+    <event id="connectwise-cloud-backup" order="1">
+      <title>ConnectWise Cloud Backup supply-chain attack on Microsoft 365 tenants</title>
+      <shortTitle>ConnectWise Cloud Backup breach</shortTitle>
+      <startDate>2026-10-17</startDate>
+      <category>Supply-chain attack</category>
+      <severity>High</severity>
+      <cvss>Not available in the research file.</cvss>
+      <affected>Managed Service Providers using ConnectWise Cloud Backup and their Microsoft 365 customers. Huntress saw unauthorized sign-ins in about 173 tenants; Microsoft reported attempts on more than 2,250 tenants.</affected>
+      <attacker confidence="confirmed">Storm-0940, according to Microsoft Threat Intelligence</attacker>
+      <cves></cves>
+      <status>Cloud Backup and related services were suspended while credentials were disabled and services restored in phases. Investigation continued.</status>
+      <summary>Attackers used a stolen ConnectWise Cloud Backup application credential to sign into customer Microsoft 365 tenants. ConnectWise shut down access on 17 October and revoked the application credentials. Microsoft later attributed the activity to Storm-0940. No backup data was reported stolen.</summary>
+      <happened><p>ConnectWise Cloud Backup was a multi-tenant service used by managed service providers to back up Microsoft 365 data. The service had broad permissions in customer tenants, including access to mailboxes, files, Teams messages and directory data.</p><p>Attackers used the application identity rather than a user password. In at least one tenant, a related application added itself as Global Administrator and created new client secrets, which could have allowed access to persist after the original credential was revoked.</p></happened>
+      <how><p>The attackers obtained the app credential, authenticated as the trusted service principal and requested Microsoft Graph access tokens. Because many tenants had already approved the app, the tokens carried the app permissions. The attackers could then read data or make changes without users' passwords.</p><p>A service principal is an application identity in Microsoft Entra ID. Its client secret acts like a password; an access token is the permission proof issued after authentication.</p></how>
+      <impact><p>The incident affected MSPs and Microsoft 365 tenants at scale. Public reporting described unauthorized sign-ins in at least 173 tenants and more than 2,250 targeted tenant IDs. Cloud Backup, SaaS Security and Cloud Management services were interrupted. ConnectWise said there was no evidence that encrypted backup archives were accessed, but tenant data and persistent application changes required review.</p></impact>
+      <fix><p>ConnectWise disabled the affected application IDs, revoked certificates and kept services suspended while security reviews were completed. Partners were told to review audit logs, remove unexpected credentials and follow formal reconnection instructions. Existing backup archives were reported as encrypted and safe.</p></fix>
+      <timeline>
+        <entry date="2026-10-15" refs="S2,S3"><text>Unauthorized service-principal sign-ins were observed across customer tenants.</text></entry>
+        <entry date="2026-10-16" refs="S1"><text>ConnectWise announced an investigation and shared indicators for partners to check.</text></entry>
+        <entry date="2026-10-17" refs="S1,S2"><text>ConnectWise disabled affected application identities and revoked credentials, suspending the service.</text></entry>
+        <entry date="2026-10-21" refs="S4"><text>Microsoft published attribution to Storm-0940 and described targeting at about 2,900 attempts per minute.</text></entry>
+        <entry date="2026-10-22" refs="S1"><text>ConnectWise continued phased restoration and said encrypted backup archives remained safe.</text></entry>
+      </timeline>
+      <lessons><lesson>A trusted vendor credential can become a cross-customer key.</lesson><lesson>Application permissions should be reviewed and limited, even when the app is legitimate.</lesson><lesson>Revoking the original credential is not enough if attackers create new credentials for persistence.</lesson><lesson>Tenant audit logs and service-principal activity need regular review.</lesson></lessons>
+      <glossary><term name="Supply-chain attack">An attack that reaches customers through a trusted vendor or service.</term><term name="Service principal">An application identity used to access cloud services.</term><term name="Client secret">A secret value an application uses like a password.</term><term name="Access token">A short-lived proof that grants an application permissions.</term><term name="Global Administrator">The highest-privilege administrative role in a Microsoft 365 tenant.</term></glossary>
+      <sources>
+        <source id="S1" type="Official/Primary"><title>ConnectWise status: Cloud Backup incident updates</title><publisher>ConnectWise</publisher><url>https://status.connectwise.com/pages/incident/619cf82551fec9053d612f09/6ad263692dc48705ab3da2cb</url><published>2026-10-17</published><note>Official service updates, containment and restoration details.</note></source>
+        <source id="S2" type="Researcher"><title>ConnectWise Cloud Backup supply-chain attack analysis</title><publisher>Huntress</publisher><url>https://www.huntress.com/blog/connectwise-cloud-backup-supply-chain-attack</url><published>2026-10-18</published><note>Research on unauthorized sign-ins and affected tenants.</note></source>
+        <source id="S3" type="Researcher"><title>ConnectWise Cloud Backup compromise analysis</title><publisher>Recorded Future</publisher><url>https://www.recordedfuture.com/research/connectwise-cloud-backup-compromise</url><published>2026-10-18</published><note>Independent observations of tenant activity.</note></source>
+        <source id="S4" type="Official/Primary"><title>Storm-0940 uses ARTEX agentic AI in ConnectWise supply-chain compromise</title><publisher>Microsoft Security</publisher><url>https://www.microsoft.com/en-us/security/blog/2026/10/21/storm-0940-uses-artex-agentic-ai-connectwise-supply-chain-compromise/</url><published>2026-10-21</published><note>Attribution and campaign-scale activity.</note></source>
+      </sources>
+      <verification><note>The exact way the application credential was stolen was not publicly disclosed. Public figures differ because sources counted different kinds of tenant activity. ConnectWise reported no evidence of backup archive access; investigation and tenant review were still ongoing.</note></verification>
+    </event>
+    <event id="emudhra-weak-keys" order="2">
+      <title>eMudhra weak private keys in certificate authority certificates</title>
+      <shortTitle>eMudhra CA weak keys</shortTitle>
+      <startDate>2026-10-17</startDate>
+      <category>Cryptographic weakness</category>
+      <severity>Critical</severity>
+      <cvss>CVSS 4.0: 9.1 and 6.0 for related CVEs</cvss>
+      <affected>Eight intermediate certificate authorities: six for TLS and two for code signing. They were trusted by major browsers and operating systems. Domestic Indian DSC and eSign services were not affected.</affected>
+      <attacker confidence="unattributed">No malicious attacker identified; the keys were weak by mistake</attacker>
+      <cves><cve>CVE-2026-108015</cve><cve>CVE-2026-22063</cve></cves>
+      <status>All eight intermediates were revoked and major browsers blocked them. eMudhra later exited the SSL/TLS certificate business.</status>
+      <summary>Eight eMudhra intermediate CA keys were generated with extremely small private values. Anyone could brute-force the values from the public certificates, which could have enabled forged TLS or code-signing certificates. Vendors rapidly revoked trust, and no confirmed malicious use was reported.</summary>
+      <happened><p>A key-generation ceremony in April 2025 accidentally created a second, ultra-weak key pair. Each P-384 private key had a value under 256; one example had the value 4. That is far too little randomness for a cryptographic private key.</p><p>With a weak intermediate CA key, an attacker could sign a certificate for a website or software package that browsers would normally trust. The issue was a manufacturing error, not an external breach of eMudhra systems.</p></happened>
+      <how><p>The failure was low entropy: the private key had only about eight bits of possible value. A person with the public certificate could try the few hundred possible values until one matched. The private key could then be used to sign a fake certificate.</p><p>Browser and operating-system vendors used revocation lists and trust-store updates. This removed trust in certificates signed by the affected keys.</p></how>
+      <impact><p>No actual breach of eMudhra systems or theft of user data was reported. The main impact was loss of trust in the affected CA hierarchy and the need to replace certificates. One U.S. customer ecosystem was reported to have about 30,800 certificates under the impacted hierarchy.</p></impact>
+      <fix><p>eMudhra revoked all eight intermediates. Chrome used CRLSet, Firefox used OneCRL, and Microsoft, Apple and Android updated trust decisions. Developers and administrators were told to update CA bundles and software that carries its own trust store.</p></fix>
+      <timeline>
+        <entry date="2025-04-30" refs="S5"><text>eMudhra generated keys for eight intermediate CAs inside hardware security modules.</text></entry>
+        <entry date="2026-10-17" refs="S2,S3"><text>A researcher alerted root-store maintainers. Chrome and Firefox blocked the affected TLS intermediates within hours.</text></entry>
+        <entry date="2026-10-18" refs="S1,S5"><text>eMudhra revoked all eight affected intermediate certificates.</text></entry>
+        <entry date="2026-10-19" refs="S5"><text>Apple and Google/Android blocked the same CAs.</text></entry>
+        <entry date="2026-10-20" refs="S4"><text>Microsoft updated its certificate trust lists.</text></entry>
+        <entry date="2026-10-21" refs="S1"><text>CERT-In published an advisory describing the incident and mitigation.</text></entry>
+        <entry date="2026-10-22" refs="S5"><text>eMudhra announced its exit from the global SSL/TLS certificate business.</text></entry>
+      </timeline>
+      <lessons><lesson>Private keys need strong, tested randomness even inside hardware security modules.</lesson><lesson>Trust stores must update quickly when a CA key is compromised.</lesson><lesson>Independent monitoring and certificate transparency can catch unexpected certificates.</lesson><lesson>Reducing dependence on one certificate authority limits blast radius.</lesson></lessons>
+      <glossary><term name="Certificate Authority (CA)">An entity that issues digital certificates to verify websites or software.</term><term name="Entropy">Randomness used to make cryptographic keys hard to guess.</term><term name="Intermediate CA">A certificate authority certified by a root CA to issue certificates.</term><term name="Revocation">Marking a certificate as no longer trusted before it expires.</term><term name="Trust store">The list of certificate authorities a browser or system trusts.</term><term name="Man-in-the-Middle attack">Interception or alteration of communication using a fake certificate.</term></glossary>
+      <sources>
+        <source id="S1" type="Government"><title>CERT-In Advisory CIAD-2026-0050</title><publisher>Indian Computer Emergency Response Team</publisher><url>https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES01&amp;VLCODE=CIAD-2026-0050</url><published>2026-10-21</published><note>Government advisory on affected keys and mitigation.</note></source>
+        <source id="S2" type="Official/Primary"><title>Protecting Chrome and Android users from compromised eMudhra intermediate CA certificates</title><publisher>Google Chrome Security</publisher><url>https://security.googleblog.com/2026/10/protecting-chrome-and-android-users.html</url><published>2026-10-20</published><note>Chrome and Android response.</note></source>
+        <source id="S3" type="Official/Primary"><title>Protecting Firefox users following the compromise</title><publisher>Mozilla Security</publisher><url>https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/</url><published>2026-10-20</published><note>Firefox response and OneCRL action.</note></source>
+        <source id="S4" type="Official/Primary"><title>Microsoft response to compromised eMudhra CA keys</title><publisher>Microsoft Security Response Center</publisher><url>https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108015</url><published>2026-10-26</published><note>Microsoft trust-list response.</note></source>
+        <source id="S5" type="Official/Primary"><title>eMudhra Statement on Recent Certificate Security Incident</title><publisher>eMudhra</publisher><url>https://www.emudhra.com/blog/security-incident-2026</url><published>2026-10-22</published><note>eMudhra statement and business response.</note></source>
+      </sources>
+      <verification><note>The sources disagree on whether about 30,800 certificates had been issued under the affected hierarchy. The site preserves both the eMudhra statement and the independent report. No confirmed malicious use was found in the supplied research.</note></verification>
+    </event>
+    <event id="php2shell" order="3">
+      <title>PHP2Shell: critical PHP remote code execution flaws</title>
+      <shortTitle>PHP2Shell RCE flaws</shortTitle>
+      <startDate>2026-10-17</startDate>
+      <category>Zero-day vulnerability</category>
+      <severity>Critical</severity>
+      <cvss>CVSS approximately 9.2–9.8; Red Hat rated CVE-2026-109618 at 8.1</cvss>
+      <affected>Web servers running affected PHP versions, including Apache mod_php, PHP-FPM, php-cgi and embedded PHP devices. More than 5.1 million Internet-facing hosts were estimated at risk.</affected>
+      <attacker confidence="unattributed">Unattributed</attacker>
+      <cves><cve>CVE-2026-109618</cve><cve>CVE-2026-109619</cve></cves>
+      <status>PHP released fixes on 2026-10-21. CISA added the CVEs to its Known Exploited Vulnerabilities catalog; investigations continued.</status>
+      <summary>Two critical PHP bugs allowed unauthenticated attackers to execute commands on vulnerable web servers. Attack probes were observed on 17 October, before the public fixes on 21 October, so administrators had to patch, audit and check for web shells.</summary>
+      <happened><p>CVE-2026-109618 involves an out-of-memory cleanup path that can follow corrupted internal data. CVE-2026-109619 is a use-after-free flaw where stale request state can be reused. Both can lead to remote code execution as the web-server account.</p><p>The flaws were in PHP core, not in a particular website. Attackers sent carefully crafted web requests; they did not need a login or SQL injection.</p></happened>
+      <how><p>For the out-of-memory bug, an attacker sends data that makes PHP exceed its memory limit at a specific point, confusing cleanup. For the use-after-free bug, the attacker creates and reuses stale session or error state. In both cases, arbitrary commands can run over the network.</p><p>Remote code execution means the attacker can run commands as the web process. A honeypot is a decoy system used to observe attacks.</p></how>
+      <impact><p>More than 5.1 million Internet-facing hosts were estimated to have vulnerable PHP. Reported consequences included web shells, stolen data and chained compromises of network appliances. The public research also recorded more than 77,000 exploit attempts against WordPress sites without confirmed infections in one dataset.</p></impact>
+      <fix><p>Update to PHP 8.5.12, 8.4.27, 8.3.36 or 8.2.35, or use a vendor-patched package. If patching is delayed, apply the documented temporary configuration mitigations, restart workers and audit logs and files for shells or unusual child processes.</p></fix>
+      <timeline>
+        <entry date="2026-08" refs="S5"><text>Security teams reportedly identified the two PHP RCE bugs during preliminary research.</text></entry>
+        <entry date="2026-10-17" refs="S5"><text>AWS telemetry observed the first exploit probes.</text></entry>
+        <entry date="2026-10-20" refs="S5"><text>The CVE identifiers began circulating online.</text></entry>
+        <entry date="2026-10-21" refs="S1"><text>PHP released fixed versions and live exploitation was confirmed.</text></entry>
+        <entry date="2026-10-24" refs="S6"><text>Honeypots recorded successful shell sessions on vulnerable servers.</text></entry>
+        <entry date="2026-10-26" refs="S6"><text>CISA added both CVEs to the KEV catalog.</text></entry>
+      </timeline>
+      <lessons><lesson>Patch immediately when a critical flaw is being exploited.</lesson><lesson>Inventory PHP in servers, containers and appliances, not only visible websites.</lesson><lesson>Use logs, honeypots and detection rules to find exploitation.</lesson><lesson>Configuration mitigations reduce risk but do not replace a patch.</lesson></lessons>
+      <glossary><term name="Remote Code Execution (RCE)">A flaw that lets an attacker run commands on a machine over the network.</term><term name="Use-after-free">Using program memory after it has been released.</term><term name="CVE">A standard identifier for a publicly known vulnerability.</term><term name="CVSS">A 0–10 scoring system for vulnerability severity.</term><term name="Honeypot">A decoy computer used to attract and study attackers.</term><term name="Web shell">A script or program that gives remote command access on a web server.</term></glossary>
+      <sources>
+        <source id="S1" type="Official/Primary"><title>Critical remote code execution vulnerabilities, update now</title><publisher>PHP Group</publisher><url>https://www.php.net/archive/2026.php#2026-10-21-1</url><published>2026-10-21</published><note>Official PHP announcement and fixed versions.</note></source>
+        <source id="S2" type="Official/Primary"><title>RCE via OOM corruption (GHSA-w8hw-w9fx-j79w)</title><publisher>php-src security advisory</publisher><url>https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w</url><published>2026-10-21</published><note>Technical details for CVE-2026-109618.</note></source>
+        <source id="S3" type="Official/Primary"><title>RCE via stale global state (GHSA-6wmf-4rv5-p3rp)</title><publisher>php-src security advisory</publisher><url>https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp</url><published>2026-10-21</published><note>Technical details for CVE-2026-109619.</note></source>
+        <source id="S4" type="Government"><title>CISA Known Exploited Vulnerabilities catalog</title><publisher>CISA</publisher><url>https://www.cisa.gov/known-exploited-vulnerabilities-catalog</url><published>2026-10-26</published><note>Known exploitation and patch deadline.</note></source>
+        <source id="S5" type="News"><title>Tech and Security Companies Respond to PHP2Shell</title><publisher>SecurityWeek</publisher><url>https://www.securityweek.com/php2shell-vulnerabilities-exploited-in-the-wild/</url><published>2026-10-22</published><note>Discovery and industry response.</note></source>
+        <source id="S6" type="Researcher"><title>PHP2Shell attacks now open working shells</title><publisher>CyberExperts</publisher><url>https://cyberexperts.com/php2shell-attacks-now-open-working-shells/</url><published>2026-10-27</published><note>Honeypot and exploitation analysis.</note></source>
+      </sources>
+      <verification><note>Severity ratings differ across sources. PHP and CISA cite approximately 9.2, while Red Hat rated one CVE 8.1. A suspected China-nexus actor was mentioned by one report but was not confirmed, so attribution remains unattributed.</note></verification>
+    </event>
+    <event id="updraftcentral" order="4">
+      <title>TeamUpdraft / UpdraftCentral WordPress backdoor via stolen keys</title>
+      <shortTitle>UpdraftCentral key breach</shortTitle>
+      <startDate>2026-10-17</startDate>
+      <category>Other</category>
+      <severity>Critical</severity>
+      <cvss>Not available in the research file.</cvss>
+      <affected>TeamUpdraft customer data and WordPress sites using UpdraftPlus with an active UpdraftCentral key. UpdraftPlus had more than 4 million installations; reports observed many malicious plugins.</affected>
+      <attacker confidence="unattributed">Unattributed cybercriminals</attacker>
+      <cves></cves>
+      <status>The breach was contained. Updates revoked keys, but users still had to remove old keys and inspect sites for backdoors.</status>
+      <summary>Attackers accessed TeamUpdraft’s customer database, stole UpdraftCentral connection keys and used them to send trusted commands to connected WordPress sites. Malicious plugins created hidden administrator accounts and backdoors.</summary>
+      <happened><p>UpdraftCentral lets one dashboard control backups and updates across many WordPress sites. A private connection key stored by the service authenticates remote commands.</p><p>After stealing those keys, attackers uploaded and activated malicious plugins. The plugins hid themselves and created administrator accounts, so disabling the service alone did not remove every implant.</p></happened>
+      <how><p>The stolen private keys let attackers issue commands that looked authorized. One command uploaded a plugin archive. The plugin created a hidden admin user and could bypass normal login checks, giving attackers persistence even after key revocation.</p><p>A connection key is a secret digital code used to authenticate a remote command. A backdoor is hidden software that provides secret access.</p></how>
+      <impact><p>The customer database contained names, addresses, order history, hashed passwords, two-factor settings and connection keys. WordPress sites could be fully taken over. Reports observed more than 99 distinct malicious plugin names, while the exact number of compromised sites remained unknown.</p></impact>
+      <fix><p>Update UpdraftPlus to the released versions, remove old UpdraftCentral keys, rotate passwords and two-factor settings, and inspect plugins, files, administrator accounts and logs. Wordfence also released an emergency firewall rule. Updating alone did not remove already-installed backdoors.</p></fix>
+      <timeline>
+        <entry date="2026-10-17/18" refs="S1,S2"><text>TeamUpdraft detected unauthorized access and attackers likely extracted customer data and connection keys.</text></entry>
+        <entry date="2026-10-18" refs="S3"><text>The first malicious plugin installation was observed.</text></entry>
+        <entry date="2026-10-19" refs="S1,S2,S4"><text>TeamUpdraft disclosed the incident and released updates that revoked old keys.</text></entry>
+        <entry date="2026-10-20" refs="S1,S2"><text>The breach was reported as contained and Wordfence released firewall rules.</text></entry>
+        <entry date="2026-10-29" refs="S1"><text>The official incident page was updated with further findings.</text></entry>
+      </timeline>
+      <lessons><lesson>Remote-management keys are as sensitive as passwords.</lesson><lesson>Connected services need regular audits and least privilege.</lesson><lesson>Revoke keys and investigate systems after a breach; do not assume revocation removes implants.</lesson><lesson>Unexpected plugins and administrator accounts are useful indicators.</lesson></lessons>
+      <glossary><term name="UpdraftPlus">A WordPress plugin for backups and site migration.</term><term name="UpdraftCentral">A cloud dashboard for remotely controlling multiple WordPress sites.</term><term name="Connection key">A secret key used to authenticate remote commands.</term><term name="Backdoor">Hidden software that grants secret access.</term><term name="Plugin">A modular add-on that extends a WordPress site.</term><term name="Two-factor authentication">A login method requiring two different proofs of identity.</term></glossary>
+      <sources>
+        <source id="S1" type="Official/Primary"><title>Security incident on teamupdraft.com: what happened</title><publisher>TeamUpdraft</publisher><url>https://teamupdraft.com/blog/security-incident-on-teamupdraft-com-what-happened/</url><published>2026-10-19</published><note>Official incident report, containment and user actions.</note></source>
+        <source id="S2" type="Researcher"><title>PSA: UpdraftCentral Connection Key Compromise</title><publisher>Wordfence</publisher><url>https://www.wordfence.com/blog/2026/10/updraftcentral-connection-key-compromise/</url><published>2026-10-19</published><note>Key compromise and firewall mitigation.</note></source>
+        <source id="S3" type="Researcher"><title>Stolen UpdraftCentral Keys Are Backdooring WordPress Sites</title><publisher>Patchstack</publisher><url>https://patchstack.com/database/wordpress/plugin/updraftplus/vulnerability/stolen-updraftcentral-keys</url><published>2026-10-19</published><note>Technical activity timeline.</note></source>
+        <source id="S4" type="Official/Primary"><title>UpdraftPlus: WP Backup &amp; Migration Plugin</title><publisher>WordPress.org</publisher><url>https://wordpress.org/plugins/updraftplus/#developers</url><published>2026-10-19</published><note>Version history and revocation update.</note></source>
+        <source id="S5" type="News"><title>Stolen UpdraftCentral Keys Used to Backdoor WordPress Sites</title><publisher>The Layman Security</publisher><url>https://thelaymanssecurity.com/stolen-updraftcentral-keys-used-to-backdoor-wordpress-sites/</url><published>2026-10-19</published><note>Scope and observed plugin names.</note></source>
+      </sources>
+      <verification><note>The count of affected sites was not officially confirmed. Research sources use different version numbers for free and premium updates; the site preserves the supplied distinction. Attribution was not confirmed.</note></verification>
+    </event>
+    <event id="artex-ai-agents" order="5">
+      <title>ARTEX: AI-agent driven intrusion campaign</title>
+      <shortTitle>ARTEX AI intrusion</shortTitle>
+      <startDate>2026-10-17</startDate>
+      <category>AI-driven attack</category>
+      <severity>High</severity>
+      <cvss>Not available in the research file.</cvss>
+      <affected>More than 200 organizations in at least 14 countries, including government, defense, telecom and semiconductor organizations. About 140 targets were sensitive and at least 9 organizations had confirmed intrusions.</affected>
+      <attacker confidence="confirmed">VAPOR PANDA, according to CrowdStrike</attacker>
+      <cves></cves>
+      <status>The campaign appeared complete and ARTEX was taken offline by its developer. Security firms published detection rules and mitigation guidance.</status>
+      <summary>Starting on 17 October, VAPOR PANDA used the ARTEX AI toolkit to scan and breach hundreds of networks at machine speed. The campaign targeted more than 200 organizations in 11 days and installed the BLOODALCHEMY backdoor in at least 9.</summary>
+      <happened><p>ARTEX is an agentic penetration-testing framework powered by large language models. A human operator provided target scopes, then planner and worker agents scanned networks, selected exploits and carried out post-exploitation steps.</p><p>The agents installed BLOODALCHEMY, harvested administrator passwords and BitLocker keys, and used old email or VPN keys to move laterally. A human remained in the loop and issued instructions at critical points.</p></happened>
+      <how><p>ARTEX scanned target ranges, used an LLM to interpret findings, selected or generated exploits and installed a backdoor after access. It also searched for credentials in directory attributes and old files, then used those secrets for lateral movement. Human instructions could redirect agents away from protected systems.</p><p>The attack was not a new vulnerability. It combined automation with existing weaknesses, poor credential hygiene and exposed services.</p></how>
+      <impact><p>More than 200 organizations in at least 14 countries were targeted, including sensitive government and corporate systems. At least 9 organizations had confirmed intrusions. The campaign exposed administrator passwords, disk-encryption keys, email and network configuration data, raising the speed and scale of cyber-espionage.</p></impact>
+      <fix><p>Rotate signing keys, tokens, service credentials and old passwords. Enforce SAML validation and AWS IMDSv2, patch internet-facing systems, deploy endpoint detection on all servers, monitor high-volume scripted activity and apply the published ARTEX/BLOODALCHEMY detection rules.</p></fix>
+      <timeline>
+        <entry date="2026-10-17" refs="S1"><text>CrowdStrike observed the AI-driven intrusion campaign begin.</text></entry>
+        <entry date="2026-10-28" refs="S1,S3"><text>The approximately 11-day campaign concluded after targeting more than 200 organizations.</text></entry>
+        <entry date="2026-10-29" refs="S1"><text>CrowdStrike published its report on ARTEX and VAPOR PANDA.</text></entry>
+        <entry date="2026-11-01" refs="S6"><text>Further analysis described the scale and technical behavior.</text></entry>
+        <entry date="2026-11-03" refs="S6"><text>Reports said the ARTEX developer took the framework offline and made it closed-source.</text></entry>
+        <entry date="2026-11-10" refs="S1,S5"><text>Defenders continued to rotate credentials and deploy detection rules.</text></entry>
+      </timeline>
+      <lessons><lesson>AI increases attack speed and scale, so defenders must watch for automation.</lesson><lesson>Old keys and credentials become attack paths if they are not rotated.</lesson><lesson>High request volumes and scripted activity can reveal agentic attacks.</lesson><lesson>Human oversight remains important, but defense-in-depth is still required.</lesson></lessons>
+      <glossary><term name="Agentic AI">AI software that uses multiple agents to carry out tasks.</term><term name="Large language model">An AI model trained on text that can interpret and generate language.</term><term name="Reconnaissance">Gathering information about a target network.</term><term name="Lateral movement">Moving from one compromised system to other systems.</term><term name="Backdoor">Malicious software that preserves secret access.</term><term name="Endpoint detection and response">Security software that monitors and responds on devices.</term></glossary>
+      <sources>
+        <source id="S1" type="Official/Primary"><title>VAPOR PANDA Uses AI-Driven ARTEX to Scale a Global Espionage Campaign</title><publisher>CrowdStrike</publisher><url>https://www.crowdstrike.com/en-us/blog/vapor-panda-uses-ai-driven-artex-to-scale-global-espionage-campaign/</url><published>2026-10-29</published><note>Primary campaign report.</note></source>
+        <source id="S2" type="Researcher"><title>VAPOR PANDA and ARTEX incident summary</title><publisher>MIT AI Incident Database</publisher><url>https://incidentdatabase.ai/cite/ARTEX-VAPOR-PANDA</url><published>2026-10-30</published><note>Independent incident summary.</note></source>
+        <source id="S3" type="News"><title>China-backed group used agentic AI pentest tool against 140 sensitive targets</title><publisher>CyberScoop</publisher><url>https://cyberscoop.com/vapor-panda-artex-ai-agent-cyberattack/</url><published>2026-10-30</published><note>Scope and campaign reporting.</note></source>
+        <source id="S4" type="News"><title>Chinese hackers use AI-powered ARTEX to target organizations</title><publisher>The Hacker News</publisher><url>https://thehackernews.com/2026/10/chinese-hackers-use-ai-powered-artex.html</url><published>2026-10-30</published><note>Technical and victim reporting.</note></source>
+        <source id="S5" type="News"><title>CrowdStrike uncovers China-linked AI cyber campaign</title><publisher>SecurityBrief Asia</publisher><url>https://securitybrief.asia/story/crowdstrike-uncovers-china-linked-ai-cyber-campaign</url><published>2026-10-30</published><note>Mitigation recommendations.</note></source>
+        <source id="S6" type="Researcher"><title>Vapor Panda ARTEX: AI hits 140+ targets in 11 days</title><publisher>DecryptionDigest</publisher><url>https://decryptiondigest.com/vapor-panda-artex-ai-hits-140-targets/</url><published>2026-11-01</published><note>Independent technical analysis.</note></source>
+      </sources>
+      <verification><note>Attribution beyond VAPOR PANDA comes from CrowdStrike intelligence and was not independently confirmed by every source. The supplied research gives no CVE or conventional numeric severity score.</note></verification>
+    </event>
+    <event id="litellm" order="6">
+      <title>LiteLLM supply-chain attack</title>
+      <shortTitle>LiteLLM supply-chain hack</shortTitle>
+      <startDate>2026-10-21</startDate>
+      <category>Supply-chain attack</category>
+      <severity>Critical</severity>
+      <cvss>Not available in the research file.</cvss>
+      <affected>Any environment that installed LiteLLM v1.107.0 while the malicious release was available: developer laptops, CI pipelines and cloud AI gateways. LiteLLM had about 23 million weekly downloads.</affected>
+      <attacker confidence="unattributed">Unknown; stolen GitHub CLI tokens were used</attacker>
+      <cves></cves>
+      <status>The malicious package and images were removed. Users were told to downgrade to v1.106.2 or earlier, delete startup-hook files, rotate secrets and rebuild affected environments.</status>
+      <summary>Attackers hijacked LiteLLM’s release pipeline and published a backdoored v1.107.0 to PyPI and Docker. Hidden Python startup files collected cloud credentials, developer keys, browser passwords and other secrets whenever Python ran.</summary>
+      <happened><p>Attackers used stolen GitHub tokens from LiteLLM developers to redirect a release workflow to a lookalike fork. A one-line build change caused cook.pth, cook.py and sitecustomize.py to ship in the package.</p><p>Python automatically loads some .pth and sitecustomize files at interpreter startup. The payload used that behavior to steal AWS, Azure, GCP, Kubernetes, Docker, SSH/GPG, browser and AI-provider secrets.</p></happened>
+      <how><p>Stolen developer tokens allowed the attackers to run the release process. The malicious fork added files that execute automatically when Python starts, even if the user did not explicitly import LiteLLM. The code gathered secrets and sent them to attacker infrastructure.</p><p>This was a supply-chain attack because the build and distribution path was compromised, not because LiteLLM users installed a normal software bug.</p></how>
+      <impact><p>The package had about 49,000 downloads before removal, within a project with about 23 million weekly downloads. Any affected environment could have exposed cloud accounts, developer resources, AI service credentials or enterprise data. No specific downstream breach was confirmed in the supplied research.</p></impact>
+      <fix><p>Remove v1.107.0, pin to v1.106.2 or earlier, delete cook.pth, cook.py and sitecustomize.py, rotate all potentially exposed credentials, audit logs and rebuild affected environments from a clean state.</p></fix>
+      <timeline>
+        <entry date="2026-10-21 11:39 UTC" refs="S1,S2"><text>Compromised LiteLLM v1.107.0 was published to PyPI.</text></entry>
+        <entry date="2026-10-21 11:46 UTC" refs="S2"><text>Docker images for v1.107.0 and moving tags were built from the malicious fork.</text></entry>
+        <entry date="2026-10-21 13:20 UTC" refs="S2"><text>PyPI quarantined the release and removed the wheels.</text></entry>
+        <entry date="2026-10-21 14:20 UTC" refs="S3"><text>Docker tags were repointed or disabled.</text></entry>
+        <entry date="2026-10-24" refs="S1,S3"><text>LiteLLM resumed clean releases and removed the v1.107.0 tag.</text></entry>
+      </timeline>
+      <lessons><lesson>Developer and CI tokens are high-value secrets.</lesson><lesson>Release workflows should accept only approved repositories and branches.</lesson><lesson>Pin and verify dependencies and container images.</lesson><lesson>Scan for unexpected interpreter startup files after a supply-chain incident.</lesson></lessons>
+      <glossary><term name="PyPI">The Python Package Index, a repository for Python libraries.</term><term name="Docker image">A packaged application and its dependencies that can run in a container.</term><term name="CI/CD pipeline">Automation that builds, tests and deploys software.</term><term name="OAuth token">A credential that lets a system act with a user or app permission.</term><term name="Credential stealer">Malware that searches for and sends secrets to an attacker.</term><term name="sitecustomize.py">A Python startup file automatically loaded by the interpreter.</term></glossary>
+      <sources>
+        <source id="S1" type="Official/Primary"><title>Contained: Oct 21, 2026 LiteLLM release v1.107.0 compromised</title><publisher>LiteLLM / BerriAI</publisher><url>https://docs.litellm.ai/blog/security-incident-oct-21-2026</url><published>2026-10-21</published><note>Official incident report and remediation.</note></source>
+        <source id="S2" type="Official/Primary"><title>Inside the LiteLLM 1.107.0 supply-chain compromise</title><publisher>Microsoft Security</publisher><url>https://www.microsoft.com/en-us/security/blog/2026/10/23/inside-the-litellm-1-107-0-supply-chain-compromise-credential-theft-through-python-startup-hooks/</url><published>2026-10-23</published><note>Credential theft and startup-hook analysis.</note></source>
+        <source id="S3" type="Researcher"><title>LiteLLM compromised PyPI and Docker packages</title><publisher>Datadog Security Labs</publisher><url>https://securitylabs.datadoghq.com/articles/litellm-compromised-pypi-docker/</url><published>2026-10-22</published><note>Package and image timeline.</note></source>
+        <source id="S4" type="Researcher"><title>LiteLLM 1.107.0 compromised PyPI backdoored wheels</title><publisher>StepSecurity</publisher><url>https://www.stepsecurity.io/blog/litellm-1-107-0-compromised-pypi-backdoored-wheels-credential-stealer</url><published>2026-10-22</published><note>Build and payload analysis.</note></source>
+        <source id="S5" type="Researcher"><title>LiteLLM package breach: credentials stolen from users</title><publisher>NHIMG</publisher><url>https://nhimg.org/litellm-pypi-package-breach-credentials-stolen-from-users</url><published>2026-10-23</published><note>Impact summary.</note></source>
+      </sources>
+      <verification><note>The supplied research notes small differences in the exact quarantine time and explains that some figures are downloads rather than unique installations. No official government advisory specific to LiteLLM was found.</note></verification>
+    </event>
+    <event id="drupal-rce" order="7">
+      <title>Drupal critical remote code execution patches</title>
+      <shortTitle>Drupal core RCE patches</shortTitle>
+      <startDate>2026-10-22</startDate>
+      <category>Zero-day vulnerability</category>
+      <severity>Critical</severity>
+      <cvss>Not available in the research file.</cvss>
+      <affected>Drupal sites using affected Field UI and Entity Reference modules. The supplied research describes internet-facing Drupal installations as exposed before patching.</affected>
+      <attacker confidence="unattributed">Unattributed</attacker>
+      <cves><cve>CVE-2026-108097</cve><cve>CVE-2026-108099</cve></cves>
+      <status>Drupal released security advisories and patches. Administrators were told to update core and contributed modules and review logs for exploitation.</status>
+      <summary>Drupal issued urgent patches for two critical remote code execution vulnerabilities affecting Field UI and Entity Reference functionality. The flaws could let unauthenticated attackers send crafted requests that execute code on a site server.</summary>
+      <happened><p>The Field UI flaw and Entity Reference flaw affected Drupal components that process structured web requests. A crafted request could reach unsafe code paths and give an attacker control of the web process.</p><p>Because Drupal sites often expose administrative and content endpoints to the internet, patching and reviewing logs were important even when no compromise was visible.</p></happened>
+      <how><p>An attacker sends a request that reaches a vulnerable Drupal code path. If the server accepts the request, the resulting remote code execution runs with the web process permissions. The supplied research describes this at a high level and does not claim a single confirmed exploit chain.</p></how>
+      <impact><p>A successful exploit could change site content, read server-side data, install a backdoor or pivot to other systems. Exact victim counts were not confirmed in the supplied research, which is why the site presents the exposure and remediation guidance without invented totals.</p></impact>
+      <fix><p>Apply the Drupal security releases immediately, update affected contributed modules, restrict unnecessary exposure, review access and error logs, and investigate unexpected files or administrator activity.</p></fix>
+      <timeline>
+        <entry date="2026-10-14" refs="S1,S2"><text>Drupal published a critical security release for the affected components.</text></entry>
+        <entry date="2026-10-17" refs="S3,S4"><text>Researchers and vendors reported active exploitation risk and urged immediate updates.</text></entry>
+        <entry date="2026-10-22" refs="S3,S5"><text>Security reporting summarized the patches and exploitation concern.</text></entry>
+        <entry date="2026-10-27" refs="S1,S4"><text>Administrators continued reviewing logs and applying vendor updates.</text></entry>
+      </timeline>
+      <lessons><lesson>A security release is only protective after it is installed.</lesson><lesson>CMS inventories must include contributed modules, not only core.</lesson><lesson>Review logs after a critical web vulnerability is disclosed.</lesson><lesson>Least privilege limits what a compromised web process can do.</lesson></lessons>
+      <glossary><term name="Remote Code Execution (RCE)">A flaw that allows an attacker to run code on a server.</term><term name="Drupal core">The main software that powers a Drupal site.</term><term name="Field UI">Drupal functionality for managing fields through an interface.</term><term name="Entity Reference">Drupal functionality for linking content entities.</term><term name="Security advisory">A vendor notice describing a vulnerability and its fix.</term><term name="Patch">A software update that fixes a bug.</term></glossary>
+      <sources>
+        <source id="S1" type="Official/Primary"><title>Drupal core - Critical security release</title><publisher>Drupal.org</publisher><url>https://www.drupal.org/sa-core-2026-014</url><published>2026-10-14</published><note>Official Drupal core advisory and patch.</note></source>
+        <source id="S2" type="Official/Primary"><title>Drupal contributed modules security release</title><publisher>Drupal.org</publisher><url>https://www.drupal.org/sa-contrib-2026-218</url><published>2026-10-14</published><note>Official contributed-module advisory.</note></source>
+        <source id="S3" type="Researcher"><title>Drupal Field UI RCE CVE-2026-108097</title><publisher>Aviatrix</publisher><url>https://aviatrix.ai/threat-research-center/drupal-field-ui-rce-cve-2026-108097/</url><published>2026-10-17</published><note>Technical exposure analysis.</note></source>
+        <source id="S4" type="News"><title>Drupal warns of fast exploitation risk for critical core RCE flaw</title><publisher>GBHackers</publisher><url>https://gbhackers.com/drupal-warns-critical-rce-flaw/</url><published>2026-10-22</published><note>Patch and exploitation reporting.</note></source>
+        <source id="S5" type="News"><title>Drupal critical security release October 14</title><publisher>The DropTimes</publisher><url>https://www.thedroptimes.com/72811/drupal-critical-security-release-october-14</url><published>2026-10-22</published><note>Release summary.</note></source>
+      </sources>
+      <verification><note>The supplied research contains limited quantitative detail and does not confirm a specific attacker or victim count. The page intentionally states what was not confirmed rather than filling gaps with estimates.</note></verification>
+    </event>
+  </events>
+</blackOctober>

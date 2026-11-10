@@ -1,0 +1,44 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "title": "Home"
+    },
+    {
+      "path": "/about.html",
+      "title": "About"
+    },
+    {
+      "path": "/sources.html",
+      "title": "Sources"
+    },
+    {
+      "path": "/incidents/connectwise-cloud-backup.html",
+      "title": "ConnectWise Cloud Backup breach"
+    },
+    {
+      "path": "/incidents/emudhra-weak-keys.html",
+      "title": "eMudhra CA weak keys"
+    },
+    {
+      "path": "/incidents/php2shell.html",
+      "title": "PHP2Shell RCE flaws"
+    },
+    {
+      "path": "/incidents/updraftcentral.html",
+      "title": "UpdraftCentral key breach"
+    },
+    {
+      "path": "/incidents/artex-ai-agents.html",
+      "title": "ARTEX AI intrusion"
+    },
+    {
+      "path": "/incidents/litellm.html",
+      "title": "LiteLLM supply-chain hack"
+    },
+    {
+      "path": "/incidents/drupal-rce.html",
+      "title": "Drupal core RCE patches"
+    }
+  ]
+}
